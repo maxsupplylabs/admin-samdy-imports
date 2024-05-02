@@ -24,7 +24,8 @@ export default function Page() {
   return (
     <>
       <div className="flex flex-col gap-4 justify-center items-center mt-8 mx-2 overflow-hidden">
-        <div className="flex flex-col gap-4 justify-cente items-cente">
+        <div className="flex flex-col gap-4">
+          <h1>Analytics</h1>
           <div className="grid grid-cols-3 gap-3">
             <div className="flex flex-col justify-center items-center gap-4 border rounded-lg px-6 py-2">
               <p className="opacity-30">Visitors</p>
@@ -51,6 +52,7 @@ export default function Page() {
               </span>
             </div> */}
           </div>
+          <a href="https://samdyimports.vercel.app/" target="_blank" className="text-blue-500 underline underline-offset-4">Visit your store</a>
         </div>
       </div>
     </>
