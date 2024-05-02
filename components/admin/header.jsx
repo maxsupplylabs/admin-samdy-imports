@@ -19,7 +19,7 @@ export default function AdminHeader() {
             href={"/"}
             className={clsx(
               //   lusitana.className,
-              "flex text-lg font-semibold uppercase md:text-xl"
+              "flex text-lg font-semibold italic uppercase md:text-xl"
             )}
           >
             Samdy Administration

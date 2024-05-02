@@ -424,7 +424,7 @@ const addproductformcomponent = ({ allCollections }) => {
                 <label htmlFor="is-on-sale" className="font-medium text-gray-900">
                   Under promotional sale
                 </label>
-                <p className="text-gray-500 text-xs">Include this product to the current promotion.</p>
+                <p className="text-gray-500 text-xs">Include this product to the current promotion - customers will see promotional banner at the top of your store's homepage.</p>
               </div>
             </div>
           </div>
