@@ -1,14 +1,18 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+"use client"
 import React from "react";
-import Image from "next/image";
-import {
-  fetchAllDocumentsInCollection,
-} from "@/utils/functions";
 import AllProducts from "@/components/admin/all-products";
+import { useAllCollections } from "@/hooks/useAllCollections";
 
-const page = async () => {
-  const allProducts = await fetchAllDocumentsInCollection("products");
+const page = () => {
+  const { collections, isLoading, isError } = useAllCollections();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error Loading data</div>;
+  }
 
   return (
     <div className="">
@@ -17,7 +21,7 @@ const page = async () => {
         flex-col items-start md:max-w-[35%] m-auto justify-center gap-3 mb-40"
       >
         <div className="w-full">
-          <AllProducts />
+          <AllProducts collections={collections} />
         </div>
       </div>
     </div>

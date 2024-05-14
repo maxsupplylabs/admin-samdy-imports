@@ -20,7 +20,7 @@ const page = async () => {
         flex-col items-start md:max-w-[35%] m-auto justify-center gap-3 mb-40"
       >
         <div className="w-full">
-          <AddProductForm allCollections={allCollections} />
+          <AddProductForm />
         </div>
       </div>
     </div>

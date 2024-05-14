@@ -334,7 +334,7 @@ const EditProductFormComponent = ({ data, productID }) => {
         </div>
 
         {/* variations */}
-        <div>
+        {/* <div>
           <div className="flex flex-col border border-gray-300 rounded-lg p-2">
             <label htmlFor="variations" className="text-sm font-medium">
               Variations
@@ -378,14 +378,14 @@ const EditProductFormComponent = ({ data, productID }) => {
               <span>Add Variation</span>
             </button>
           </div>
-        </div>
+        </div> */}
         <fieldset className="border border-blue-300 rounded-lg p-2">
           <legend className="text-sm font-medium text-blue-600 mb-4">
-            Offers
+            Specification
           </legend>
           <div className="flex flex-col gap-3">
             {/* Free Shipping */}
-            <div className="relative flex gap-x-3 px-2">
+            {/* <div className="relative flex gap-x-3 px-2">
               <div className="flex h-6 items-center">
                 <input
                   id="free-shipping"
@@ -402,9 +402,9 @@ const EditProductFormComponent = ({ data, productID }) => {
                 </label>
                 <p className="text-gray-500 text-xs">An indication will show on this item, to tell customer that they will pay no shipping fee when it is shipped from China to Ghana.</p>
               </div>
-            </div>
+            </div> */}
             {/* Free Delivery */}
-            <div className="relative flex gap-x-3 px-2">
+            {/* <div className="relative flex gap-x-3 px-2">
               <div className="flex h-6 items-center">
                 <input
                   id="free-delivery"
@@ -421,7 +421,7 @@ const EditProductFormComponent = ({ data, productID }) => {
                 </label>
                 <p className="text-gray-500 text-xs">An indication will show on this item, to tell customers that they will pay no delivery fee when it is delivered anywhere in the country.</p>
               </div>
-            </div>
+            </div> */}
             {/* Available in Ghana */}
             <div className="relative flex gap-x-3 px-2">
               <div className="flex h-6 items-center">
@@ -442,7 +442,7 @@ const EditProductFormComponent = ({ data, productID }) => {
               </div>
             </div>
             {/* Is on Sale */}
-            <div className="relative flex gap-x-3 px-2">
+            {/* <div className="relative flex gap-x-3 px-2">
               <div className="flex h-6 items-center">
                 <input
                   id="is-on-sale"
@@ -459,7 +459,7 @@ const EditProductFormComponent = ({ data, productID }) => {
                 </label>
                 <p className="text-gray-500 text-xs">Include this product to the current promotion. An indication for the promotion will be shown as well.</p>
               </div>
-            </div>
+            </div> */}
           </div>
         </fieldset>
         <div className="flex justify-end px-4 py-2">

@@ -1,6 +1,7 @@
 "use client";
 import { X } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
 import { BsPlus } from "react-icons/bs";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -9,9 +10,11 @@ import { RotatingLines } from "react-loader-spinner";
 import { useBizProductContext } from "../../context/Business-Product-Edit";
 import { getDocumentsInCollectionRealTime } from "@/utils/functions";
 import { PhotoIcon } from '@heroicons/react/24/solid'
-import Link from "next/link"
+import { Badge } from "@/components/ui/badge"
+import { LuPlus } from "react-icons/lu";
+import { useAllCollections } from "@/hooks/useAllCollections";
 
-const addproductformcomponent = ({ allCollections }) => {
+const addproductformcomponent = () => {
   const [uploadedCollections, setUploadedCollections] = useState([])
 
 
@@ -63,6 +66,35 @@ const addproductformcomponent = ({ allCollections }) => {
     setImageSrc,
   } = useBizProductContext();
 
+  const addProductInitialSelectedDepartment = localStorage.getItem("addProductSelectedDepartment");
+  const [addProductselectedDepartment, setAddProductSelectedDepartment] = useState(addProductInitialSelectedDepartment || "womensBagsAndLuggage");
+
+  const addProductInitialSelectedCollection = localStorage.getItem("addProductSelectedCollection");
+    const [addProductSelectedCollection, setaddProductSelectedCollection] = useState(
+      addProductInitialSelectedCollection || ""
+    );
+
+    useEffect(() => {
+      // Save the selected department to localStorage whenever it changes
+      localStorage.setItem("addProductSelectedDepartment", addProductselectedDepartment);
+      // Save the selected collection to localStorage whenever it changes
+      localStorage.setItem("addProductSelectedCollection", addProductSelectedCollection);
+  }, [addProductselectedDepartment, addProductSelectedCollection]);
+
+ 
+      // Function to handle dep selection
+      const handleDepartmentClick = (departmentId) => {
+        setAddProductSelectedDepartment(departmentId);
+        setaddProductSelectedCollection("")
+    };
+    // Function to handle collection selection
+    const handleCollectionClick = (collectionId) => {
+      setaddProductSelectedCollection(collectionId);
+
+        // Update the URL query parameter to reflect the selected collection
+        // router.push(`/?col=${collectionId}`, undefined, { shallow: true });
+    };
+
   const handleDepartmentToggle = (departmentId) => {
     if (departments.includes(departmentId)) {
       removeDepartment(departmentId);
@@ -113,6 +145,15 @@ const addproductformcomponent = ({ allCollections }) => {
 
   useEffect(() => { }, [files, imageSrc]);
 
+  const { cols, isLoading, isError } = useAllCollections();
+
+  if(isLoading) {
+   return <div>Loading...</div>
+  }
+ 
+  if(isError) {
+   return <div>Error fetching data</div>
+  }
   const allDepartments = [
     { id: "womensWatches", name: "Women's Watches" },
     { id: "mensWatches", name: "Men's Watches" },
@@ -134,7 +175,11 @@ const addproductformcomponent = ({ allCollections }) => {
     <div>
       <div className="bg-black flex justify-between items-center px-4 py-2">
         <div>
-          <h1 className="text-white text-lg font-bold">Add product</h1>
+          <h1 className="flex flex-col gap-1 text-white text-lg capitalize font-bold">
+            <span>
+              Add product
+            </span>
+          </h1>
         </div>
         <Button
           onClick={handleProductSave}
@@ -264,11 +309,26 @@ const addproductformcomponent = ({ allCollections }) => {
               id="market_price"
               placeholder="150.00"
               onChange={handleProductInfoChange}
-              required
             />
+            <span className="text-xs text-black/40 pt-1">This price will be seen with a strikethrough. <span className="line-through">GHc150</span></span>
           </div>
         </div>
-
+        {/* moq fields */}
+        <div className="flex flex-col gap-2 border border-gray-300 rounded-lg p-2">
+          <div className="flex flex-col">
+            <label htmlFor="moq" className="text-sm leading-6 font-medium">
+              MOQ{" "}
+            </label>
+            <input
+              className="border placeholder:text-sm border-black rounded-md px-2 py-1 text-base"
+              type="number"
+              id="moq"
+              placeholder=""
+              onChange={handleProductInfoChange}
+            />
+            <span className="text-xs text-black/40 pt-1">Minimum Order Quantity</span>
+          </div>
+        </div>
         {/* variations */}
         <div>
           <div className="flex flex-col border border-gray-300 rounded-lg p-2">
@@ -281,14 +341,14 @@ const addproductformcomponent = ({ allCollections }) => {
                   <input
                     className="border placeholder:text-sm border-black rounded-md px-2 py-1 text-base w-full"
                     type="text"
-                    placeholder="Type (e.g., color or size)"
+                    placeholder="Type (e.g. Color or Size)"
                     value={variation.type}
                     onChange={(e) => updateVariationType(index, e.target.value)}
                   />
                   <input
                     className="border placeholder:text-sm border-black rounded-md px-2 py-1 text-base w-full"
                     type="text"
-                    placeholder="Values (comma-separated)"
+                    placeholder="Values (Separate them with a comma)"
                     value={variation.values.join(",")}
                     onChange={(e) =>
                       updateVariationValues(
@@ -316,7 +376,7 @@ const addproductformcomponent = ({ allCollections }) => {
 
         <fieldset className="border border-gray-300 rounded-lg p-2">
           <legend className="text-sm font-medium mb-4">
-            Select department
+            Select a department
           </legend>
           {allDepartments.map((department) => (
             <div key={department.id} className="flex items-center gap-x-3 mb-2">
@@ -324,7 +384,12 @@ const addproductformcomponent = ({ allCollections }) => {
                 id={`department_${department.id}`}
                 type="checkbox"
                 className="h-4 w-4 rounded border-gray-300"
-                onChange={() => handleDepartmentToggle(department.id)}
+                onChange={
+                  () => {
+                    handleDepartmentToggle(department.id)
+                    handleDepartmentClick(department.id);
+                  } 
+                }
                 checked={departments.includes(department.id)}
               />
               <label htmlFor={`department_${department.id}`} className="text-sm leading-6 text-gray-900">{department.name}</label>
@@ -334,8 +399,11 @@ const addproductformcomponent = ({ allCollections }) => {
 
         <fieldset className="border border-gray-300 rounded-lg p-2">
           <legend className="text-sm font-medium mb-4">
-            Select collection
+            Select a collection
           </legend>
+          {uploadedCollections.length === 0 && <div className="text-sm flex justify-center md:mx-0 md:ml-2 md:text-lg items-center text-center mt-2 p-2 bg-[#f7f7f7] w-[22rem] mx-auto rounded-lg shadow-lg text-gray-600">
+            <h2>You have <span className="font-semibold">no collection</span>. <br /> A product must be inside a collection. <Link href={"/add-collection"} className="text-blue-600"> Create collection.</Link></h2>
+          </div>}
           {uploadedCollections.map((collection) => (
             <div key={collection.id} className="flex items-center gap-x-3 mb-2">
               <input
@@ -343,7 +411,12 @@ const addproductformcomponent = ({ allCollections }) => {
                 type="checkbox"
                 className="h-4 w-4 rounded border-gray-300"
                 checked={collections.includes(collection.id)}
-                onChange={() => handleCollectionToggle(collection.id)}
+                onChange={
+                  () => {
+                    handleCollectionToggle(collection.id)
+                    handleCollectionClick(collection.id)
+                  } 
+                }
               />
               <label htmlFor={`collection_${collection.id}`} className="text-sm leading-6 text-gray-900">{collection.title}</label>
             </div>
@@ -351,12 +424,13 @@ const addproductformcomponent = ({ allCollections }) => {
         </fieldset>
         <fieldset className="border border-blue-300 rounded-lg p-2">
           <legend className="text-sm font-medium text-blue-600 mb-4">
-            Offers
+            Specification
           </legend>
           <div className="flex flex-col gap-3">
 
+            {/* I HAVE BEEN ASKED TO REMOVE: BY STORE OWNER */}
             {/* Free Shipping */}
-            <div className="relative flex gap-x-3 px-2">
+            {/* <div className="relative flex gap-x-3 px-2">
               <div className="flex h-6 items-center">
                 <input
                   id="free-shipping"
@@ -372,9 +446,9 @@ const addproductformcomponent = ({ allCollections }) => {
                 </label>
                 <p className="text-gray-500 text-xs">An indication will show on this item, to tell customer that they will pay no shipping fee when it is shipped from China to Ghana.</p>
               </div>
-            </div>
+            </div> */}
             {/* Free Delivery */}
-            <div className="relative flex gap-x-3 px-2">
+            {/* <div className="relative flex gap-x-3 px-2">
               <div className="flex h-6 items-center">
                 <input
                   id="free-delivery"
@@ -390,7 +464,7 @@ const addproductformcomponent = ({ allCollections }) => {
                 </label>
                 <p className="text-gray-500 text-xs">An indication will show on this item, to tell customers that they will pay no delivery fee when it is delivered anywhere in the country.</p>
               </div>
-            </div>
+            </div> */}
             {/* Available in Ghana */}
             <div className="relative flex gap-x-3 px-2">
               <div className="flex h-6 items-center">
@@ -410,7 +484,7 @@ const addproductformcomponent = ({ allCollections }) => {
               </div>
             </div>
             {/* Is on Sale */}
-            <div className="relative flex gap-x-3 px-2">
+            {/* <div className="relative flex gap-x-3 px-2">
               <div className="flex h-6 items-center">
                 <input
                   id="is-on-sale"
@@ -424,9 +498,9 @@ const addproductformcomponent = ({ allCollections }) => {
                 <label htmlFor="is-on-sale" className="font-medium text-gray-900">
                   Under promotional sale
                 </label>
-                <p className="text-gray-500 text-xs">Include this product to the current promotion - customers will see promotional banner at the top of your store's homepage.</p>
+                <p className="text-gray-500 text-xs">Include this product to the current promotion.</p>
               </div>
-            </div>
+            </div> */}
           </div>
 
         </fieldset>

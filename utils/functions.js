@@ -1031,6 +1031,40 @@ export const getSubcollectionDocuments = (subcollectionName, callback) => {
   return unsubscribe;
 };
 
+export const fetchProductsWithOrders = async () => {
+
+  try {
+    // Perform query to fetch orders
+    const ordersQuerySnapshot = await getDocs(query(collection(db, 'orders')));
+
+    // Initialize an object to store products with their orders
+    const productsWithOrdersMap = {};
+
+    // Iterate through each order
+    ordersQuerySnapshot.forEach((orderDoc) => {
+      const orderData = orderDoc.data();
+      const productId = orderData.productId;
+
+      // Add order to the respective product's orders array
+      if (!productsWithOrdersMap[productId]) {
+        productsWithOrdersMap[productId] = [];
+      }
+      productsWithOrdersMap[productId].push(orderData);
+    });
+
+    // Convert the object to an array of products with orders
+    const productsWithOrdersArray = Object.entries(productsWithOrdersMap).map(([productId, orders]) => ({
+      productId: productId,
+      orders: orders
+    }));
+
+    return productsWithOrdersArray;
+  } catch (error) {
+    console.error("Error fetching products with orders:", error);
+    throw error; // Rethrow the error so the caller can handle it
+  }
+};
+
 // Function to fetch a specific document from a Firestore collection
 export async function fetchDocumentFromFirestore(collectionName, documentId) {
   try {

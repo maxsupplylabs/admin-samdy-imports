@@ -51,7 +51,13 @@ export default function Customers({ visitorsWithOrders }) {
           </p>
         )}
       </div> */}
-      {customers.map((customer) => (
+       <div className="p-2">
+                <h1 className="text-3xl font-bold capitalize">Customers</h1>
+            </div>
+      <div className="flex h-[60vh] justify-center items-center mx-8 text-sm text-center">
+        <p>Visitors who have ordered will appear here. <span className="block">Coming soon...</span></p>
+      </div>
+      {/* {customers.map((customer) => (
         <div key={customer.id}>
           {customer.name != "" ? (
             <CustomerCard
@@ -62,7 +68,7 @@ export default function Customers({ visitorsWithOrders }) {
             ""
           )}
         </div>
-      ))}
+      ))} */}
     </>
   );
 }
@@ -96,7 +102,7 @@ function CustomerCard({ customer, updateCustomerState }) {
               <p>Location: {customer.location}</p>
               <p>Phone: {customer.phone}</p>
             </div>
-            {/* <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <span>Confirmed: </span>{" "}
               {customer.confirmed ? (
                 <div className="flex gap-1 items-center">
@@ -113,7 +119,7 @@ function CustomerCard({ customer, updateCustomerState }) {
                   </span>
                 </div>
               )}
-            </div> */}
+            </div>
             <div className="flex items-center gap-2">
               <span>Paid: </span>{" "}
               {customer.paid ? (
@@ -163,7 +169,7 @@ function EditPanel({ customer, updateCustomerState }) {
 
   return (
     <div className="flex gap-3 px-2 py-2 justify-center">
-      {/* <p>
+      <p>
         <button
           onClick={handleToggleConfirmed}
           className="flex items-center gap-2 bg-black text-white py-1 px-2 rounded-lg"
@@ -174,7 +180,7 @@ function EditPanel({ customer, updateCustomerState }) {
           </span>
         </button>
       </p>
-      <br /> */}
+      <br />
       <p>
         <button
           onClick={handleTogglePaid}
