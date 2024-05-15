@@ -88,7 +88,7 @@ export const BizProductContextProvider = ({ children }) => {
     confirmed_orders: 0,
     confirmed_sales: 0,
     market_price: 0,
-    moq: 0,
+    moq: 1,
     price: 0,
     variations: [],
   });
