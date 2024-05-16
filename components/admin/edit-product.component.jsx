@@ -1,30 +1,49 @@
 "use client";
 import { X } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BsPlus } from "react-icons/bs";
+import Link from "next/link";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { useBizProductContext } from "@/context/Business-Product-Edit";
-import { editProductInStore } from "@/utils/functions";
+import { editProductInStore, getDocumentsInCollectionRealTime } from "@/utils/functions";
 import { toast } from "react-hot-toast";
 import { RotatingLines } from "react-loader-spinner";
 
 const EditProductFormComponent = ({ data, productID }) => {
+  const [uploadedCollections, setUploadedCollections] = useState([])
+
+
+  useEffect(() => {
+    // Subscribe to real-time updates for the "products" collection
+    const unsubscribeUploadedCollections = getDocumentsInCollectionRealTime("collections", (count) => {
+      setUploadedCollections(count);
+    });
+
+    return () => {
+      // Cleanup subscriptions when the component unmounts
+      unsubscribeUploadedCollections();
+    };
+  }, []);
+
   const {
-    // handleProductSave,
-    // isFreeShipping,
-    setIsFreeShipping,
+    departments,
+    collections,
+    addCollection,
+    removeCollection,
+    addDepartment,
+    removeDepartment,
     setVariations,
   } = useBizProductContext();
   const {
     name,
     description,
     price,
-    collections,
+    // collections,
     confirmed_orders,
     confirmed_sales,
-    departments,
+    // departments,
     images,
     isFreeShipping,
     isAvailableInGhana,
@@ -90,8 +109,8 @@ const EditProductFormComponent = ({ data, productID }) => {
           price: numericPrice, // Convert to number
           market_price: numericMarketPrice, // Convert to number
           variations,
-          // collections,
-          // departments,
+          collections,
+          departments,
           // images: imgurls,
         },
         productID
@@ -199,17 +218,21 @@ const EditProductFormComponent = ({ data, productID }) => {
     setVariations(updatedVariations);
   };
 
-  /**handlers for colors */
-  const addColor = () => {
-    const newColor = "";
-    const updatedColor = [...colors, newColor];
-    setColors(updatedColor);
+
+  const handleDepartmentToggle = (departmentId) => {
+    if (departments.includes(departmentId)) {
+      removeDepartment(departmentId);
+    } else {
+      addDepartment(departmentId);
+    }
   };
 
-  const updateColor = (index, value) => {
-    const updatedColors = [...colors];
-    updatedColors[index] = value;
-    setColors(updatedColors);
+  const handleCollectionToggle = (collectionId) => {
+    if (collections.includes(collectionId)) {
+      removeCollection(collectionId);
+    } else {
+      addCollection(collectionId);
+    }
   };
 
   const removeColor = (index) => {
@@ -222,6 +245,23 @@ const EditProductFormComponent = ({ data, productID }) => {
     console.log(productData);
     setProductData({ ...productData, [e.target.id]: e.target.value });
   };
+
+  const allDepartments = [
+    { id: "womensWatches", name: "Women's Watches" },
+    { id: "mensWatches", name: "Men's Watches" },
+    { id: "womensBagsAndLuggage", name: "Women's Bags & Luggage" },
+    { id: "mensBagsAndLuggage", name: "Men's Bags & Luggage" },
+    { id: "womensShoes", name: "Women's Shoes" },
+    { id: "mensShoes", name: "Men's Shoes" },
+    { id: "womensClothing", name: "Women's Clothing" },
+    { id: "mensClothing", name: "Men's Clothing" },
+    { id: "WomensAccessories", name: "Women's Accessories" },
+    { id: "mensAccessories", name: "Men's Accessories" },
+    { id: "homeAndKitchen", name: "Home & Kitchen" },
+    { id: "electronics", name: "Electronics" },
+    { id: "appliances", name: "Appliances" },
+    // ... other departments
+  ];
 
   return (
     <div>
@@ -379,49 +419,57 @@ const EditProductFormComponent = ({ data, productID }) => {
             </button>
           </div>
         </div> */}
+                <fieldset className="border border-gray-300 rounded-lg p-2">
+          <legend className="text-sm font-medium mb-4">
+            Select a department
+          </legend>
+          {allDepartments.map((department) => (
+            <div key={department.id} className="flex items-center gap-x-3 mb-2">
+              <input
+                id={`department_${department.id}`}
+                type="checkbox"
+                className="h-4 w-4 rounded border-gray-300"
+                onChange={
+                  () => {
+                    handleDepartmentToggle(department.id)
+                  } 
+                }
+                checked={departments.includes(department.id)}
+              />
+              <label htmlFor={`department_${department.id}`} className="text-sm leading-6 text-gray-900">{department.name}</label>
+            </div>
+          ))}
+        </fieldset>
+
+        <fieldset className="border border-gray-300 rounded-lg p-2">
+          <legend className="text-sm font-medium mb-4">
+            Select a collection
+          </legend>
+          {uploadedCollections.length === 0 && <div className="text-sm flex justify-center md:mx-0 md:ml-2 md:text-lg items-center text-center mt-2 p-2 bg-[#f7f7f7] w-[22rem] mx-auto rounded-lg shadow-lg text-gray-600">
+            <h2>You have <span className="font-semibold">no collection</span>. <br /> A product must be inside a collection. <Link href={"/add-collection"} className="text-blue-600"> Create collection.</Link></h2>
+          </div>}
+          {uploadedCollections.map((collection) => (
+            <div key={collection.id} className="flex items-center gap-x-3 mb-2">
+              <input
+                id={`collection_${collection.id}`}
+                type="checkbox"
+                className="h-4 w-4 rounded border-gray-300"
+                checked={collections.includes(collection.id)}
+                onChange={
+                  () => {
+                    handleCollectionToggle(collection.id)
+                  } 
+                }
+              />
+              <label htmlFor={`collection_${collection.id}`} className="text-sm leading-6 text-gray-900">{collection.title}</label>
+            </div>
+          ))}
+        </fieldset>
         <fieldset className="border border-blue-300 rounded-lg p-2">
           <legend className="text-sm font-medium text-blue-600 mb-4">
             Specification
           </legend>
           <div className="flex flex-col gap-3">
-            {/* Free Shipping */}
-            {/* <div className="relative flex gap-x-3 px-2">
-              <div className="flex h-6 items-center">
-                <input
-                  id="free-shipping"
-                  name="free-shipping"
-                  type="checkbox"
-                  checked={productData?.isFreeShipping || ""}
-                  onChange={handleFreeShippingChange}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-              </div>
-              <div className="text-sm leading-6">
-                <label htmlFor="free-shipping" className="font-medium text-gray-900">
-                  Free shipping (when pre-ordered)
-                </label>
-                <p className="text-gray-500 text-xs">An indication will show on this item, to tell customer that they will pay no shipping fee when it is shipped from China to Ghana.</p>
-              </div>
-            </div> */}
-            {/* Free Delivery */}
-            {/* <div className="relative flex gap-x-3 px-2">
-              <div className="flex h-6 items-center">
-                <input
-                  id="free-delivery"
-                  name="free-delivery"
-                  type="checkbox"
-                  checked={productData?.isFreeDelivery}
-                  onChange={handleIsFreeDeliveryChange}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-              </div>
-              <div className="text-sm leading-6">
-                <label htmlFor="free-delivery" className="font-medium text-gray-900">
-                  Free delivery (when pre-ordered or available in Ghana)
-                </label>
-                <p className="text-gray-500 text-xs">An indication will show on this item, to tell customers that they will pay no delivery fee when it is delivered anywhere in the country.</p>
-              </div>
-            </div> */}
             {/* Available in Ghana */}
             <div className="relative flex gap-x-3 px-2">
               <div className="flex h-6 items-center">
@@ -441,25 +489,6 @@ const EditProductFormComponent = ({ data, productID }) => {
                 <p className="text-gray-500 text-xs">An indication will show on this item, to tell customers that it is available for instant delivery.</p>
               </div>
             </div>
-            {/* Is on Sale */}
-            {/* <div className="relative flex gap-x-3 px-2">
-              <div className="flex h-6 items-center">
-                <input
-                  id="is-on-sale"
-                  name="is-on-sale"
-                  type="checkbox"
-                  checked={productData?.isOnSale || ""}
-                  onChange={handleIsOnSaleChange}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-              </div>
-              <div className="text-sm leading-6">
-                <label htmlFor="is-on-sale" className="font-medium text-gray-900">
-                  Under promotional sale
-                </label>
-                <p className="text-gray-500 text-xs">Include this product to the current promotion. An indication for the promotion will be shown as well.</p>
-              </div>
-            </div> */}
           </div>
         </fieldset>
         <div className="flex justify-end px-4 py-2">
