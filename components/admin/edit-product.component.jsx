@@ -13,8 +13,8 @@ import { RotatingLines } from "react-loader-spinner";
 import { useProduct } from "@/hooks/useProduct"
 
 const EditProductFormComponent = ({ data, productID }) => {
-  const [uploadedCollections, setUploadedCollections] = useState([])
 
+  const [uploadedCollections, setUploadedCollections] = useState([])
   useEffect(() => {
     // Subscribe to real-time updates for the "products" collection
     const unsubscribeUploadedCollections = getDocumentsInCollectionRealTime("collections", (count) => {
@@ -28,39 +28,13 @@ const EditProductFormComponent = ({ data, productID }) => {
   }, []);
 
   const {
-    departments,
-    collections,
-    addCollection,
-    removeCollection,
-    addDepartment,
-    removeDepartment,
     variations,
   } = useBizProductContext();
 
-  // const {
-  //   name,
-  //   description,
-  //   price,
-  //   confirmed_orders,
-  //   confirmed_sales,
-  //   images,
-  //   isFreeShipping,
-  //   isAvailableInGhana,
-  //   isOnSale,
-  //   isFreeDelivery,
-  //   market_price,
-  //   departments,
-  //   moq,
-  //   variations,
-  // } = data;
-  const [colors, setColors] = useState([]);
-  const [sizes, setSizes] = useState([]);
   const [productData, setProductData] = useState({
     name: data.name,
     description: data.description,
     collections: data.collections,
-    // confirmed_orders,
-    // confirmed_sales,
     market_price: data.market_price,
     departments: data.departments,
     moq: data.moq,
@@ -68,51 +42,32 @@ const EditProductFormComponent = ({ data, productID }) => {
     variations: data.variations,
     isFreeShipping: data.isFreeShipping,
     isAvailableInGhana: data.isAvailableInGhana,
-    // isOnSale,
-    // isFreeDelivery,
   });
+  const [departments, setDepartments] = useState(productData.departments);
+  const [collections, setCollections] = useState(productData.collections);
+
+
   const [files, setFiles] = useState([]);
   const [imageSrc, setImageSrc] = useState(data.images);
   const [newImagesUrl, setNewImagesUrl] = useState(imageSrc);
   const [saving, setSaving] = useState(false);
 
-  const onFileInputChange = (e) => {
-    const selectedFile = e.target.files[0];
-
-    if (selectedFile && files.length < 3) {
-      setFiles([...files, selectedFile]);
-      setNewImagesUrl([...newImagesUrl, URL.createObjectURL(selectedFile)]);
-    }
-  };
 
   // Handle product save
   const handleProductEdit = async () => {
     try {
       setSaving(true);
       console.log("uploading image");
-      // const productID = generateUniqueId(productData.name);
-      // const imgurls = await uploadProductImagesToFirebase(
-      //   files,
-      //   bizIDFromPath,
-      //   productID
-      // );
-      // console.log("done uploading images and returning urls", imgurls);
-      // Convert price and market_price to numbers.
       const numericPrice = parseFloat(productData.price);
       const numericMarketPrice = parseFloat(productData.market_price);
       await editProductInStore(
         {
           ...productData,
-          // colors,
-          // sizes,
-          // isFreeShipping,
-          // id: productID,
           price: numericPrice, // Convert to number
           market_price: numericMarketPrice, // Convert to number
           variations,
           collections,
           departments,
-          // images: imgurls,
         },
         productID
       );
@@ -124,25 +79,6 @@ const EditProductFormComponent = ({ data, productID }) => {
     }
   };
 
-  const removeImage = (index) => {
-    const updatedFiles = [...files];
-    updatedFiles.splice(index, 1);
-    const updatedImageSrc = [...newImagesUrl];
-    updatedImageSrc.splice(index, 1);
-    setFiles(updatedFiles);
-    setNewImagesUrl(updatedImageSrc);
-
-    const imageToRemove = newImagesUrl[index];
-    const newImageScr = imageSrc.filter((item) => item !== imageToRemove);
-    setImageSrc(newImageScr);
-  };
-
-  const handleFreeShippingChange = () => {
-    setProductData((prevData) => ({
-      ...prevData,
-      isFreeShipping: !prevData.isFreeShipping,
-    }));
-  };
 
   const handleIsAvailableInGhanaChange = () => {
     setProductData((prevData) => ({
@@ -151,54 +87,22 @@ const EditProductFormComponent = ({ data, productID }) => {
     }));
   };
 
-  const handleIsOnSaleChange = () => {
-    setProductData((prevData) => ({
-      ...prevData,
-      isOnSale: !prevData.isOnSale,
-    }));
-  };
 
-  const handleIsFreeDeliveryChange = () => {
-    setProductData((prevData) => ({
-      ...prevData,
-      isFreeDelivery: !prevData.isFreeDelivery,
-    }));
-  };
+    const handleDepartmentToggle = (departmentId) => {
+      setDepartments((prevDepartments) =>
+        prevDepartments.includes(departmentId)
+          ? prevDepartments.filter((id) => id !== departmentId)
+          : [...prevDepartments, departmentId]
+      );
+    };
 
-  /**handlers for size */
-  const addSize = () => {
-    const newsize = "";
-    const updatedSize = [...sizes, newsize];
-    setSizes(updatedSize);
-  };
-
-
-
-
-
-
-
-  const handleDepartmentToggle = (departmentId) => {
-    if (departments.includes(departmentId)) {
-      removeDepartment(departmentId);
-    } else {
-      addDepartment(departmentId);
-    }
-  };
-
-  const handleCollectionToggle = (collectionId) => {
-    if (collections.includes(collectionId)) {
-      removeCollection(collectionId);
-    } else {
-      addCollection(collectionId);
-    }
-  };
-
-  const removeColor = (index) => {
-    const updatedColors = [...colors];
-    updatedColors.splice(index, 1);
-    setColors(updatedColors);
-  };
+    const handleCollectionToggle = (collectionId) => {
+      setCollections((prevCollections) =>
+        prevCollections.includes(collectionId)
+          ? prevCollections.filter((id) => id !== collectionId)
+          : [...prevCollections, collectionId]
+      );
+    };
 
   const handleProductInfoChange = (e) => {
     console.log(productData);
@@ -331,134 +235,93 @@ const EditProductFormComponent = ({ data, productID }) => {
             />
           </div>
         </div>
-
-        {/* variations */}
-        {/* <div>
-          <div className="flex flex-col border border-gray-300 rounded-lg p-2">
-            <label htmlFor="variations" className="text-sm font-medium">
-              Variations
+      <fieldset className="border border-gray-300 rounded-lg p-2">
+        <legend className="text-sm font-medium mb-4">
+          Current department
+        </legend>
+        {departments.map((item) => (
+          <div key={item} className="flex items-center gap-x-3 mb-2">
+            <input
+              id={`current_department_${item}`}
+              type="checkbox"
+              className="h-4 w-4 rounded border-gray-300"
+              checked={true}
+              disabled
+            />
+            <label htmlFor={`current_department_${item}`} className="text-sm leading-6 text-gray-900">
+              {allDepartments.find((department) => department.id === item)?.name}
             </label>
-            {variations.map((variation, index) => (
-              <div
-                key={index}
-                className="flex gap-2 items-center justify-between mb-4"
-              >
-                <div className="flex flex-col items-start mb-2 gap-2 min-w-[85%]">
-                  <input
-                    className="border placeholder:text-sm border-black rounded-md px-2 py-1 text-base w-full"
-                    type="text"
-                    placeholder="Type (e.g., color or size)"
-                    value={variation.type}
-                    onChange={(e) => updateVariationType(index, e.target.value)}
-                  />
-                  <input
-                    className="border placeholder:text-sm border-black rounded-md px-2 py-1 text-base w-full"
-                    type="text"
-                    placeholder="Values (comma-separated)"
-                    value={variation.values.join(",")}
-                    onChange={(e) =>
-                      updateVariationValues(
-                        index,
-                        e.target.value.split(",").map((value) => value.trim())
-                      )
-                    }
-                  />
-                </div>
-                <button onClick={() => removeVariation(index)}>
-                  <RiDeleteBin6Line className="text-red-500 text-xl" />
-                </button>
-              </div>
-            ))}
-            <button
-              className="flex items-center gap-2 py-2 text-start w-full bg-white"
-              onClick={addVariation}
-            >
-              <BsPlus className="bg-green-400 text-white h-6 w-6 rounded-full" />
-              <span>Add Variation</span>
-            </button>
           </div>
-        </div> */}
-        <fieldset className="border border-gray-300 rounded-lg p-2">
-          <legend className="text-sm font-medium mb-4">
-            Current department
-          </legend>
-          {productData?.departments.map((item) => (
-            <div key={productData?.id} className="flex items-center gap-x-3 mb-2">
-              <input
-                id={`department_${productData?.id}`}
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300"
-                onChange={""}
-                checked={true}
-                disabled
-              />
-              <label htmlFor={`department_${productData?.id}`} className="text-sm leading-6 text-gray-900">{allDepartments.map((department) => department.id.includes(item) ? department.name : null)}</label>
-            </div>
-          ))}
-        </fieldset>
-        <fieldset className="border border-gray-300 rounded-lg p-2">
-          <legend className="text-sm font-medium mb-4">
-            Select a new department
-          </legend>
-          {allDepartments.map((department) => (
-            <div key={department.id} className="flex items-center gap-x-3 mb-2">
-              <input
-                id={`department_${department.id}`}
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300"
-                onChange={
-                  () => {
-                    handleDepartmentToggle(department.id)
-                  }
-                }
-                checked={departments.includes(department.id)}
-              />
-              <label htmlFor={`department_${department.id}`} className="text-sm leading-6 text-gray-900">{department.name}</label>
-            </div>
-          ))}
-        </fieldset>
-        <fieldset className="border border-gray-300 rounded-lg p-2">
-          <legend className="text-sm font-medium mb-4">
-            Current collection
-          </legend>
-          {data.collections.map((item) => (
-            <div key={item} className="flex items-center gap-x-3 mb-2">
-              <input
-                id={`department_${productData?.name}`}
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300"
-                onChange={""}
-                checked={true}
-                disabled
-              />
-              <label htmlFor={`department_${productData?.name}`} className="text-sm leading-6 text-gray-900">{item}</label>
-            </div>
-          ))}
-        </fieldset>
-        <fieldset className="border border-gray-300 rounded-lg p-2">
-          <legend className="text-sm font-medium mb-4">
-            Select a new collection
-          </legend>
-          {uploadedCollections.length === 0 && <div className="text-sm flex justify-center md:mx-0 md:ml-2 md:text-lg items-center text-center mt-2 p-2 bg-[#f7f7f7] w-[22rem] mx-auto rounded-lg shadow-lg text-gray-600">
-            <h2>You have <span className="font-semibold">no collection</span>. <br /> A product must be inside a collection. <Link href={"/add-collection"} className="text-blue-600"> Create collection.</Link></h2>
-          </div>}
-          {uploadedCollections.map((collection) => (
-            <div key={collection.id} className="flex items-center gap-x-3 mb-2">
-              <input
-                id={`collection_${collection.id}`}
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300"
-                checked={collections.includes(collection.id)}
-                onChange={
-                  () => {
-                    handleCollectionToggle(collection.id)
-                  }
-                }
-              />
-              <label htmlFor={`collection_${collection.id}`} className="text-sm leading-6 text-gray-900">{collection.title}</label>
-            </div>
-          ))}
-        </fieldset>
+        ))}
+      </fieldset>
+
+      <fieldset className="border border-gray-300 rounded-lg p-2">
+        <legend className="text-sm font-medium mb-4">
+          Select a new department
+        </legend>
+        {allDepartments.map((department) => (
+          <div key={department.id} className="flex items-center gap-x-3 mb-2">
+            <input
+              id={`department_${department.id}`}
+              type="checkbox"
+              className="h-4 w-4 rounded border-gray-300"
+              onChange={() => handleDepartmentToggle(department.id)}
+              checked={departments.includes(department.id)}
+            />
+            <label htmlFor={`department_${department.id}`} className="text-sm leading-6 text-gray-900">
+              {department.name}
+            </label>
+          </div>
+        ))}
+      </fieldset>
+      
+      <fieldset className="border border-gray-300 rounded-lg p-2">
+        <legend className="text-sm font-medium mb-4">
+          Current collection
+        </legend>
+        {collections.map((item) => (
+          <div key={item} className="flex items-center gap-x-3 mb-2">
+            <input
+              id={`current_collection_${item}`}
+              type="checkbox"
+              className="h-4 w-4 rounded border-gray-300"
+              checked={true}
+              disabled
+            />
+            <label htmlFor={`current_collection_${item}`} className="text-sm leading-6 text-gray-900">
+              {uploadedCollections.find((collection) => collection.id === item)?.title}
+            </label>
+          </div>
+        ))}
+      </fieldset>
+
+      <fieldset className="border border-gray-300 rounded-lg p-2">
+        <legend className="text-sm font-medium mb-4">
+          Select a new collection
+        </legend>
+        {uploadedCollections.length === 0 && (
+          <div className="text-sm flex justify-center md:mx-0 md:ml-2 md:text-lg items-center text-center mt-2 p-2 bg-[#f7f7f7] w-[22rem] mx-auto rounded-lg shadow-lg text-gray-600">
+            <h2>
+              You have <span className="font-semibold">no collection</span>. <br /> A product must be inside a collection.{' '}
+              <Link href="/add-collection" className="text-blue-600">Create collection.</Link>
+            </h2>
+          </div>
+        )}
+        {uploadedCollections.map((collection) => (
+          <div key={collection.id} className="flex items-center gap-x-3 mb-2">
+            <input
+              id={`collection_${collection.id}`}
+              type="checkbox"
+              className="h-4 w-4 rounded border-gray-300"
+              onChange={() => handleCollectionToggle(collection.id)}
+              checked={collections.includes(collection.id)}
+            />
+            <label htmlFor={`collection_${collection.id}`} className="text-sm leading-6 text-gray-900">
+              {collection.title}
+            </label>
+          </div>
+        ))}
+      </fieldset>
         <fieldset className="border border-blue-300 rounded-lg p-2">
           <legend className="text-sm font-medium text-blue-600 mb-4">
             Specification

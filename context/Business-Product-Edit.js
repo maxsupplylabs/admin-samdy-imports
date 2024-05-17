@@ -160,7 +160,7 @@ export const BizProductContextProvider = ({ children }) => {
 
 
 const addDepartment = (departmentId) => {
-  setDepartments((prevDepartment) => [...prevDepartment, departmentId]);
+  setDepartments([ departmentId]);
 };
 
 const removeDepartment = (departmentId) => {
@@ -171,7 +171,7 @@ const removeDepartment = (departmentId) => {
 
 
 const addCollection = (collectionId) => {
-  setCollections((prevCollections) => [...prevCollections, collectionId]);
+  setCollections([collectionId]);
 };
 
 const removeCollection = (collectionId) => {
