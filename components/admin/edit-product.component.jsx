@@ -10,10 +10,10 @@ import { useBizProductContext } from "@/context/Business-Product-Edit";
 import { editProductInStore, getDocumentsInCollectionRealTime } from "@/utils/functions";
 import { toast } from "react-hot-toast";
 import { RotatingLines } from "react-loader-spinner";
+import { useProduct } from "@/hooks/useProduct"
 
 const EditProductFormComponent = ({ data, productID }) => {
   const [uploadedCollections, setUploadedCollections] = useState([])
-
 
   useEffect(() => {
     // Subscribe to real-time updates for the "products" collection
@@ -34,44 +34,45 @@ const EditProductFormComponent = ({ data, productID }) => {
     removeCollection,
     addDepartment,
     removeDepartment,
-    setVariations,
-  } = useBizProductContext();
-  const {
-    name,
-    description,
-    price,
-    // collections,
-    confirmed_orders,
-    confirmed_sales,
-    // departments,
-    images,
-    isFreeShipping,
-    isAvailableInGhana,
-    isOnSale,
-    isFreeDelivery,
-    market_price,
-    moq,
     variations,
-  } = data;
-  const [colors, setColors] = useState([]);
+  } = useBizProductContext();
 
+  // const {
+  //   name,
+  //   description,
+  //   price,
+  //   confirmed_orders,
+  //   confirmed_sales,
+  //   images,
+  //   isFreeShipping,
+  //   isAvailableInGhana,
+  //   isOnSale,
+  //   isFreeDelivery,
+  //   market_price,
+  //   departments,
+  //   moq,
+  //   variations,
+  // } = data;
+  const [colors, setColors] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [productData, setProductData] = useState({
-    name,
-    description,
-    confirmed_orders,
-    confirmed_sales,
-    market_price,
-    moq,
-    price,
-    variations,
-    isFreeShipping,
-    isAvailableInGhana,
-    isOnSale,
-    isFreeDelivery,
+    name: data.name,
+    description: data.description,
+    collections: data.collections,
+    // confirmed_orders,
+    // confirmed_sales,
+    market_price: data.market_price,
+    departments: data.departments,
+    moq: data.moq,
+    price: data.price,
+    variations: data.variations,
+    isFreeShipping: data.isFreeShipping,
+    isAvailableInGhana: data.isAvailableInGhana,
+    // isOnSale,
+    // isFreeDelivery,
   });
   const [files, setFiles] = useState([]);
-  const [imageSrc, setImageSrc] = useState(images);
+  const [imageSrc, setImageSrc] = useState(data.images);
   const [newImagesUrl, setNewImagesUrl] = useState(imageSrc);
   const [saving, setSaving] = useState(false);
 
@@ -171,52 +172,10 @@ const EditProductFormComponent = ({ data, productID }) => {
     setSizes(updatedSize);
   };
 
-  const updateSize = (index, value) => {
-    const updatedSize = [...sizes];
-    updatedSize[index] = value;
-    setSizes(updatedSize);
-  };
 
-  const removeSize = (index) => {
-    const updatedSize = [...sizes];
-    updatedSize.splice(index, 1);
-    setSizes(updatedSize);
-  };
 
-  // Functions to handle variations
-  const addVariation = () => {
-    const newVariation = { type: "", values: [] };
-    setVariations([...variations, newVariation]);
-  };
 
-  const updateVariationType = (index, value) => {
-    const updatedVariations = [...variations];
-    updatedVariations[index].type = value;
-    setVariations(updatedVariations);
-  };
 
-  const addVariationValue = (index, value) => {
-    const updatedVariations = [...variations];
-    updatedVariations[index].values.push(value);
-    setVariations(updatedVariations);
-  };
-
-  const removeVariationValue = (index, valueIndex) => {
-    const updatedVariations = [...variations];
-    updatedVariations[index].values.splice(valueIndex, 1);
-    setVariations(updatedVariations);
-  };
-
-  const removeVariation = (index) => {
-    const updatedVariations = [...variations];
-    updatedVariations.splice(index, 1);
-    setVariations(updatedVariations);
-  };
-  const updateVariationValues = (index, values) => {
-    const updatedVariations = [...variations];
-    updatedVariations[index].values = values;
-    setVariations(updatedVariations);
-  };
 
 
   const handleDepartmentToggle = (departmentId) => {
@@ -419,9 +378,27 @@ const EditProductFormComponent = ({ data, productID }) => {
             </button>
           </div>
         </div> */}
-                <fieldset className="border border-gray-300 rounded-lg p-2">
+        <fieldset className="border border-gray-300 rounded-lg p-2">
           <legend className="text-sm font-medium mb-4">
-            Select a department
+            Current department
+          </legend>
+          {productData?.departments.map((item) => (
+            <div key={productData?.id} className="flex items-center gap-x-3 mb-2">
+              <input
+                id={`department_${productData?.id}`}
+                type="checkbox"
+                className="h-4 w-4 rounded border-gray-300"
+                onChange={""}
+                checked={true}
+                disabled
+              />
+              <label htmlFor={`department_${productData?.id}`} className="text-sm leading-6 text-gray-900">{allDepartments.map((department) => department.id.includes(item) ? department.name : null)}</label>
+            </div>
+          ))}
+        </fieldset>
+        <fieldset className="border border-gray-300 rounded-lg p-2">
+          <legend className="text-sm font-medium mb-4">
+            Select a new department
           </legend>
           {allDepartments.map((department) => (
             <div key={department.id} className="flex items-center gap-x-3 mb-2">
@@ -432,7 +409,7 @@ const EditProductFormComponent = ({ data, productID }) => {
                 onChange={
                   () => {
                     handleDepartmentToggle(department.id)
-                  } 
+                  }
                 }
                 checked={departments.includes(department.id)}
               />
@@ -440,10 +417,27 @@ const EditProductFormComponent = ({ data, productID }) => {
             </div>
           ))}
         </fieldset>
-
         <fieldset className="border border-gray-300 rounded-lg p-2">
           <legend className="text-sm font-medium mb-4">
-            Select a collection
+            Current collection
+          </legend>
+          {data.collections.map((item) => (
+            <div key={item} className="flex items-center gap-x-3 mb-2">
+              <input
+                id={`department_${productData?.name}`}
+                type="checkbox"
+                className="h-4 w-4 rounded border-gray-300"
+                onChange={""}
+                checked={true}
+                disabled
+              />
+              <label htmlFor={`department_${productData?.name}`} className="text-sm leading-6 text-gray-900">{item}</label>
+            </div>
+          ))}
+        </fieldset>
+        <fieldset className="border border-gray-300 rounded-lg p-2">
+          <legend className="text-sm font-medium mb-4">
+            Select a new collection
           </legend>
           {uploadedCollections.length === 0 && <div className="text-sm flex justify-center md:mx-0 md:ml-2 md:text-lg items-center text-center mt-2 p-2 bg-[#f7f7f7] w-[22rem] mx-auto rounded-lg shadow-lg text-gray-600">
             <h2>You have <span className="font-semibold">no collection</span>. <br /> A product must be inside a collection. <Link href={"/add-collection"} className="text-blue-600"> Create collection.</Link></h2>
@@ -458,7 +452,7 @@ const EditProductFormComponent = ({ data, productID }) => {
                 onChange={
                   () => {
                     handleCollectionToggle(collection.id)
-                  } 
+                  }
                 }
               />
               <label htmlFor={`collection_${collection.id}`} className="text-sm leading-6 text-gray-900">{collection.title}</label>

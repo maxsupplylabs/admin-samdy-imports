@@ -1,18 +1,25 @@
+"use client"
 import React from "react";
 import EditProductFormComponent from "@/components/admin/edit-product.component";
-import { fetchDocumentFromFirestore } from "@/utils/functions";
+import { useProduct } from "@/hooks/useProduct"
 
-
-const page = async ({ params }) => {
+const page = ({ params }) => {
   const { productID } = params;
-  const data = await fetchDocumentFromFirestore('products', productID );
-  if (!data) return <div>Product does not exist</div>;
+ const { product, isLoading, isError} = useProduct(productID)
+ console.log(product)
+ if (isLoading) {
+  return <div>Loading...</div>
+ }
+
+ if (isError) {
+  return <div>Loading...</div>
+ }
   return (
     <div className="">
       <div className="flex flex-col items-start md:max-w-[35%] m-auto justify-center gap-3 mb-40">
         <div className="w-full">
         <EditProductFormComponent
-          data={data}
+          data={product}
           productID={productID}
         />
 
