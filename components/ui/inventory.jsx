@@ -298,13 +298,24 @@ export default function Inventory({ products }) {
                             >
                                 <div className="flex flex-col justify-start items-center">
                                     <div className="w-full">
-                                        <Image
-                                            className={`w-14 h-14 object-cover rounded-full ${selectedCollection === collection.id ? "border border-black" : ""}`}
-                                            src={collection.images[0].src}
-                                            width={500}
-                                            height={500}
-                                            alt=""
-                                        />
+
+                                        {collection.images.length > 0 ? (
+                                            <Image
+                                                className={`w-14 h-14 object-cover rounded-full ${selectedCollection === collection.id ? "border border-black" : ""}`}
+                                                src={collection.images[0].src}
+                                                width={500}
+                                                height={500}
+                                                alt=""
+                                            />
+                                        ) : (
+                                            <div className="flex justify-center items-center h-14 w-14 text-xs rounded-full border object-cover bg-[#f1f1f1]">
+                                                <p>
+
+                                                No image
+                                                </p>
+                                            </div>
+                                        )}
+
                                     </div>
                                 </div>
                                 <div className="mt-2">
