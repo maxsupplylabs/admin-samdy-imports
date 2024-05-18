@@ -9,6 +9,7 @@ import { useBizProductContext } from "@/context/Business-Product-Edit";
 import { editDocumentInStore } from "@/utils/functions";
 import { toast } from "react-hot-toast";
 import { RotatingLines } from "react-loader-spinner";
+import confetti from "canvas-confetti";
 
 const EditCollectionFormComponent = ({ data, collectionID }) => {
   console.log(data);
@@ -47,6 +48,13 @@ const EditCollectionFormComponent = ({ data, collectionID }) => {
         collectionID
       ),
       toast.success(`Changes saved succesfully.`);
+            // Show confetti
+            confetti({
+              particleCount: 300,
+              spread: 70,
+              origin: { y: 0.6 },
+              colors: ['#bb0000', '#ffffff', '#00ff00', '#0000ff', '#ffbb00']
+            });
     } catch (e) {
       console.log(e);
     } finally {
