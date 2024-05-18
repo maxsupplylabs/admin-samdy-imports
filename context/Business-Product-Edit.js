@@ -9,6 +9,7 @@ import {
 import { createContext, useState, useContext } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import confetti from "canvas-confetti";
 
 const Context = createContext();
 
@@ -66,6 +67,13 @@ export const BizProductContextProvider = ({ children }) => {
         collectionID
       );
       toast.success(`Collection added succesfully.`);
+            // Show confetti
+            confetti({
+              particleCount: 300,
+              spread: 70,
+              origin: { y: 0.6 },
+              colors: ['#bb0000', '#ffffff', '#00ff00', '#0000ff', '#ffbb00']
+            });
     } catch (e) {
       console.log(e);
     } finally {
@@ -139,6 +147,13 @@ export const BizProductContextProvider = ({ children }) => {
         productID
       );
       toast.success(`Product saved succesfully.`);
+            // Show confetti
+            confetti({
+              particleCount: 300,
+              spread: 70,
+              origin: { y: 0.6 },
+              colors: ['#bb0000', '#ffffff', '#00ff00', '#0000ff', '#ffbb00']
+            });
     } catch (e) {
       console.log(e);
     } finally {
