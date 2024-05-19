@@ -94,6 +94,12 @@ const EditProductFormComponent = ({ data, productID }) => {
     }));
   };
 
+  const handleFreeShippingChange = () => {
+    setProductData((prevData) => ({
+      ...prevData,
+      isFreeShipping: !prevData.isFreeShipping,
+    }));
+  };
 
     const handleDepartmentToggle = (departmentId) => {
       setDepartments((prevDepartments) =>
@@ -354,6 +360,25 @@ const EditProductFormComponent = ({ data, productID }) => {
               </div>
             </div>
           </div>
+                      {/* Free Shipping */}
+                      <div className="relative flex gap-x-3 px-2">
+              <div className="flex h-6 items-center">
+                <input
+                  id="free-shipping"
+                  name="free-shipping"
+                  type="checkbox"
+                  checked={productData?.isFreeShipping || ""}
+                  onChange={handleFreeShippingChange}
+                  className="h-4 w-4 rounded border-gray-300"
+                />
+              </div>
+              <div className="text-sm leading-6">
+                <label htmlFor="free-shipping" className="font-medium text-gray-900">
+                  Free shipping (when pre-ordered)
+                </label>
+                <p className="text-gray-500 text-xs">An indication will show on this item, to tell customer that they will pay no shipping fee when it is shipped from China to Ghana.</p>
+              </div>
+            </div>
         </fieldset>
         <div className="flex justify-end px-4 py-2">
           <Button

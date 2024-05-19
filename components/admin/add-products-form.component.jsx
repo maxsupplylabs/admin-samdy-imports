@@ -430,7 +430,7 @@ const addproductformcomponent = () => {
 
             {/* I HAVE BEEN ASKED TO REMOVE: BY STORE OWNER */}
             {/* Free Shipping */}
-            {/* <div className="relative flex gap-x-3 px-2">
+            <div className="relative flex gap-x-3 px-2">
               <div className="flex h-6 items-center">
                 <input
                   id="free-shipping"
@@ -444,9 +444,9 @@ const addproductformcomponent = () => {
                 <label htmlFor="free-shipping" className="font-medium text-gray-900">
                   Free shipping (when pre-ordered)
                 </label>
-                <p className="text-gray-500 text-xs">An indication will show on this item, to tell customer that they will pay no shipping fee when it is shipped from China to Ghana.</p>
+                <p className="text-gray-500 text-xs">An indication will show on this item, to tell customer that they will pay no shipping fee.</p>
               </div>
-            </div> */}
+            </div>
             {/* Free Delivery */}
             {/* <div className="relative flex gap-x-3 px-2">
               <div className="flex h-6 items-center">
